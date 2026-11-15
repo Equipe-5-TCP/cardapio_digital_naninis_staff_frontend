@@ -62,7 +62,7 @@ function Login({ onLogin }) {
         <Text style={s.muted}>Área da equipe</Text>
         <Field label="E-mail" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} placeholder="voce@naninis.com" />
         <Field label="Senha" secureTextEntry value={password} onChangeText={setPassword} placeholder="••••••••" />
-        {error ? <Text style={s.error}>{error}</Text> : null}
+        {error ? <Text style={s.error} accessibilityLiveRegion="assertive">{error}</Text> : null}
         <Btn label={loading ? 'Entrando…' : 'Entrar'} onPress={submit} />
       </View>
     </SafeAreaView>
@@ -138,14 +138,18 @@ function OrdersTab({ token }) {
       </ScrollView>
       {loading ? <ActivityIndicator color={C.brown} style={{ marginTop: 30 }} /> : (
         <ScrollView contentContainerStyle={s.wrap} refreshControl={<RefreshControl refreshing={false} onRefresh={load} />}>
-          {error ? <Text style={s.error}>{error}</Text> : null}
+          {error ? <Text style={s.error} accessibilityLiveRegion="assertive">{error}</Text> : null}
 
           <View style={s.card}>
             <Text style={s.cardTitle}>Exportar CSV</Text>
             <Text style={[s.muted, { marginBottom: 8 }]}>Exporta os pedidos do filtro "{FILTERS.find(([k]) => k === filter)[1]}" acima, com período opcional.</Text>
             <View style={s.row}>
-              <TextInput style={[s.input, { flex: 1, marginRight: 8 }]} placeholder="Data inicial (AAAA-MM-DD)" value={range.start} onChangeText={(v) => setRange({ ...range, start: v })} />
-              <TextInput style={[s.input, { flex: 1 }]} placeholder="Data final (AAAA-MM-DD)" value={range.end} onChangeText={(v) => setRange({ ...range, end: v })} />
+              <TextInput style={[s.input, { flex: 1, marginRight: 8 }]} placeholder="Data inicial (AAAA-MM-DD)"
+                accessibilityLabel="Data inicial no formato AAAA-MM-DD"
+                value={range.start} onChangeText={(v) => setRange({ ...range, start: v })} />
+              <TextInput style={[s.input, { flex: 1 }]} placeholder="Data final (AAAA-MM-DD)"
+                accessibilityLabel="Data final no formato AAAA-MM-DD"
+                value={range.end} onChangeText={(v) => setRange({ ...range, end: v })} />
             </View>
             <Btn label={exporting ? 'Exportando…' : 'Exportar CSV'} variant="light" onPress={exportCsv} style={{ marginTop: 10 }} />
           </View>
@@ -236,7 +240,8 @@ function ProductForm({ token, categories, product, onDone, onCancel }) {
       <Field label="Preço (R$)" value={f.price} onChangeText={(v) => setF({ ...f, price: v.replace(',', '.') })} keyboardType="decimal-pad" placeholder="11.00" />
 
       <Text style={s.label}>Foto</Text>
-      {f.image_url ? <Image source={{ uri: f.image_url }} style={{ width: '100%', height: 140, borderRadius: 10, marginBottom: 8 }} /> : null}
+      {f.image_url ? <Image source={{ uri: f.image_url }} style={{ width: '100%', height: 140, borderRadius: 10, marginBottom: 8 }}
+        accessible={false} importantForAccessibility="no" /> : null}
       <Btn label={uploading ? 'Enviando…' : 'Escolher da galeria'} variant="light" onPress={pickImage} style={{ marginBottom: 12 }} />
       {uploading && <ActivityIndicator color={C.brown} style={{ marginBottom: 12 }} />}
       <Field label="ou cole o link da foto" value={f.image_url} onChangeText={(v) => setF({ ...f, image_url: v })} placeholder="https://…" autoCapitalize="none" />
@@ -254,7 +259,7 @@ function ProductForm({ token, categories, product, onDone, onCancel }) {
         <Switch value={f.active} onValueChange={(v) => setF({ ...f, active: v })} trackColor={{ true: C.brown }}
           accessibilityLabelledBy="lbl-ativo" accessibilityLabel="Produto disponível no cardápio" />
       </View>
-      {error ? <Text style={s.error}>{error}</Text> : null}
+      {error ? <Text style={s.error} accessibilityLiveRegion="assertive">{error}</Text> : null}
       <View style={s.row}>
         <Btn label="Cancelar" variant="ghost" onPress={onCancel} />
         <Btn label={saving ? 'Salvando…' : 'Salvar'} onPress={save} />
@@ -308,7 +313,11 @@ const RANGES = [['1', 'Hoje'], ['7', '7 dias'], ['30', '30 dias'], ['90', '90 di
 function Bar({ label, value, max }) {
   const pct = max ? Math.max(6, (value / max) * 100) : 0;
   return (
-    <View style={{ marginBottom: 10 }}>
+    <View style={{ marginBottom: 10 }}
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel={`${label}: ${value} unidades`}
+      accessibilityValue={{ min: 0, max, now: value }}>
       <View style={s.row}><Text style={s.itemLine}>{label}</Text><Text style={s.itemLine}>{value}</Text></View>
       <View style={{ height: 10, backgroundColor: C.line, borderRadius: 6 }}>
         <View style={{ height: 10, width: `${pct}%`, backgroundColor: C.brown, borderRadius: 6 }} />
@@ -348,21 +357,31 @@ function DashboardTab({ token }) {
       <View style={s.card}>
         <Text style={s.cardTitle}>Período personalizado</Text>
         <View style={s.row}>
-          <TextInput style={[s.input, { flex: 1, marginRight: 8 }]} placeholder="2026-10-01" value={custom.start} onChangeText={(v) => setCustom({ ...custom, start: v })} />
-          <TextInput style={[s.input, { flex: 1 }]} placeholder="2026-10-25" value={custom.end} onChangeText={(v) => setCustom({ ...custom, end: v })} />
+          <TextInput style={[s.input, { flex: 1, marginRight: 8 }]} placeholder="2026-10-01"
+            accessibilityLabel="Data inicial no formato AAAA-MM-DD"
+            value={custom.start} onChangeText={(v) => setCustom({ ...custom, start: v })} />
+          <TextInput style={[s.input, { flex: 1 }]} placeholder="2026-10-25"
+            accessibilityLabel="Data final no formato AAAA-MM-DD"
+            value={custom.end} onChangeText={(v) => setCustom({ ...custom, end: v })} />
         </View>
         <Btn label="Aplicar" variant="light" onPress={load} />
         <Text style={[s.muted, { marginTop: 4 }]}>Formato AAAA-MM-DD</Text>
       </View>
 
-      {error ? <Text style={s.error}>{error}</Text> : null}
+      {error ? <Text style={s.error} accessibilityLiveRegion="assertive">{error}</Text> : null}
       {data && (
         <>
           <View style={[s.row, { gap: 10 }]}>
-            <View style={[s.kpi]}><Text style={s.kpiLabel}>Faturamento</Text><Text style={s.kpiValue}>{money(data.revenue)}</Text></View>
-            <View style={[s.kpi]}><Text style={s.kpiLabel}>Pedidos</Text><Text style={s.kpiValue}>{data.orders}</Text></View>
+            <View style={s.kpi} accessible accessibilityLabel={`Faturamento: ${money(data.revenue)}`}>
+              <Text style={s.kpiLabel}>Faturamento</Text><Text style={s.kpiValue}>{money(data.revenue)}</Text>
+            </View>
+            <View style={s.kpi} accessible accessibilityLabel={`Pedidos: ${data.orders}`}>
+              <Text style={s.kpiLabel}>Pedidos</Text><Text style={s.kpiValue}>{data.orders}</Text>
+            </View>
           </View>
-          <View style={s.kpi}><Text style={s.kpiLabel}>Ticket médio</Text><Text style={s.kpiValue}>{money(data.avg_ticket)}</Text></View>
+          <View style={s.kpi} accessible accessibilityLabel={`Ticket médio: ${money(data.avg_ticket)}`}>
+            <Text style={s.kpiLabel}>Ticket médio</Text><Text style={s.kpiValue}>{money(data.avg_ticket)}</Text>
+          </View>
 
           <View style={s.card}>
             <Text style={s.cardTitle}>Itens mais vendidos</Text>
